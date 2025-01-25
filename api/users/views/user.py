@@ -18,7 +18,7 @@ class UserView(APIView):
         user_data = UserSerializer(user).data
         content['status']=1
         content[user_data] = user_data
-        return JsonResponse(content, status=status.HTTP_201_CREATED)
+        return JsonResponse(content, status=status.HTTP_200_OK)
 
     def post(self, user_id):
         pass
