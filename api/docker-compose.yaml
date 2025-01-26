@@ -23,10 +23,10 @@ services:
       links:
         - redis
         - db
-      volumes:
-        - ./api:/usr/src/app
-        - ./api/media:/code/media
-        - ./api/assets:/code/static
+      #volumes:
+      #  - ./api:/usr/src/app
+      #  - ./api/media:/code/media
+      #  - ./api/assets:/code/static
       #deploy:
       #  replicas: 4
       # command: daphne -b 0.0.0.0 -p 8000 live_transcribe.asgi:application

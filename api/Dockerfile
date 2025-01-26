@@ -10,6 +10,11 @@ COPY . /code/
 EXPOSE 8000
 RUN pip install supervisor
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY /docker-entrypoint.sh /code/docker-entrypoint.sh
 # Command to run supervisor
-CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
-#CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "live_transcribe.asgi:application"]
+RUN pip install supervisor
+RUN chmod +x /docker-entrypoint.sh
+
+#CMD ["supervisord"]
+CMD ["/code/docker-entrypoint.sh", "supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+#CMD ["python", "manage.py", "runserver"]
