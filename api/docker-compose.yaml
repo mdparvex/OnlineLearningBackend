@@ -1,5 +1,16 @@
 version: '3'
 services:
+
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+
   api:
       build: 
         context: ./
@@ -8,12 +19,20 @@ services:
         - "8413:8000"
       depends_on:
         - redis
+        - db
       links:
         - redis
+        - db
+      volumes:
+        - ./api:/usr/src/app
+        - ./api/media:/code/media
+        - ./api/assets:/code/static
       #deploy:
       #  replicas: 4
       # command: daphne -b 0.0.0.0 -p 8000 live_transcribe.asgi:application
       restart: unless-stopped
+      env_file:
+        - ./.env
   redis:
       image: redis:6.2-alpine
       volumes:
