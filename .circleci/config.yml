@@ -16,7 +16,6 @@ jobs:
       - run:
           name: Run tests
           command: python manage.py test
-                  pip install --upgrade pip
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
