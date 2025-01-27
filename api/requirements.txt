@@ -9,7 +9,7 @@ colorama==0.4.6
 Django
 django-redis==5.4.0
 djangorestframework==3.15.2
-dnspython==2.7.0
+dnspython
 eventlet==0.39.0
 falcon==4.0.2
 Flask==3.1.0
