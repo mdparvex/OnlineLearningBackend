@@ -1,7 +1,7 @@
 asgiref==3.8.1
 auth==0.5.3
 authentication==1.1.0
-blinker==1.9.0
+blinker
 certifi==2024.12.14
 charset-normalizer==3.4.1
 click==8.1.8
