@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  python: circleci/python@2
 jobs:
   test-python:
     docker:
@@ -9,25 +7,18 @@ jobs:
       - checkout
       - run:
           name: Upgrade pip
-          command: python -m pip install --upgrade pip
+          command: |
+            python -m pip install --upgrade pip
       - run:
           name: Install dependencies
           command: |
-            pip install -r requirements.txt
+            if [ -f requirements.txt ]; then
+              pip install -r requirements.txt
+            fi
       - run:
           name: Run tests
           command: python manage.py test
-  deploy:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
 workflows:
   build-and-test:
     jobs:
       - test-python
-    # - deploy:
-    #     requires:
-    #       - test-python
