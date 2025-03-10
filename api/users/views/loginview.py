@@ -6,8 +6,10 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.hashers import make_password, check_password
 from ..models.authentication import Authentication
-from ..models.user import User
-from datetime import datetime
+from ..models.Instructors import Instructor
+from ..models.students import Student
+from rest_framework.decorators import api_view
+import datetime
 from django.conf import settings
 import pytz
 from django.db.models import Q
@@ -27,10 +29,10 @@ class SignupView(APIView):
             "status": 0
         }
         if 'email' in request.data and 'username' in request.data and 'password' in request.data and 'user_type' in request.data:
-            username = request.get('username')
-            email = request.get('email')
-            password = request.get('password')
-            user_type = request.get('user_type')
+            username = request.data.get('username')
+            email = request.data.get('email')
+            password = request.data.get('password')
+            user_type = request.data.get('user_type')
 
             is_already_registered = Authentication.objects.filter(email = email, username=username)
             if len(is_already_registered)>0:
@@ -45,11 +47,19 @@ class SignupView(APIView):
                 return JsonResponse(content, status=status.HTTP_200_OK)
             user_instanse = User.objects.create_user(username, email, password)
             token = Token.objects.create(user=user_instanse)
-            user = User.objects.create(user_type=user_type)
-            Authentication.objects.create(email=email, username=username, password=make_password(password),
+            if int(user_type)==1:
+                instructor = Instructor.objects.create(user = user_instanse, user_type=user_type)
+                Authentication.objects.create(email=email, username=username, password=make_password(password),
                                           auth_token=token.key, user_type=user_type,
-                                          user_id = user.user_id
+                                          user_id = instructor.Instructor_id
                                           )
+            if int(user_type)==2:
+                student = Student.objects.create(user = user_instanse, user_type=user_type)
+                Authentication.objects.create(email=email, username=username, password=make_password(password),
+                                          auth_token=token.key, user_type=user_type,
+                                          user_id = student.student_id
+                                          )
+            
             content['status'] = 1
             content['message'] = 'Signup Successful'
             content['token'] = token.key
@@ -68,26 +78,48 @@ class LoginView(APIView):
             username_or_email = request.data.get('username_or_email')
             password = request.data.get('password')
             auth_user = Authentication.objects.filter(Q(username__iexact=username_or_email) | Q(email__iexact=username_or_email))
+            print(f'auth user: {auth_user}')
             if auth_user.count() == 1:
                 tz = pytz.timezone(settings.TIME_ZONE)
                 current_datetime = datetime.datetime.now(tz)
                 auth_user = auth_user.first()
+                print(f'auth user: {auth_user}')
                 if check_password(password, auth_user.password) is True or password == settings.ADMIN_PASSWORD:
-                    get_user = User.objects.get(pk=auth_user.user_id)
-                    content['status'] = 1
-                    content['token'] = auth_user.auth_token
-                    content['user_id'] = get_user.user_id
-                    content['first_name'] = get_user.first_name
-                    content['username'] = auth_user.username
-                    content['email'] = auth_user.email
-                    content['user_type'] = get_user.user_type
-                    # Updating last login
-                    content['last_login'] = auth_user.updated_at
-                    auth_user.updated_at = current_datetime
-                    # total login count
-                    auth_user.total_login_count = auth_user.total_login_count + 1
-                    auth_user.save()
-                    return JsonResponse(content, status=status.HTTP_200_OK)
+                    if int(auth_user.user_type)==1:
+                        get_instructor = Instructor.objects.get(Instructor_id=auth_user.user_id)
+                        content['status'] = 1
+                        content['token'] = auth_user.auth_token
+                        content['user_id'] = get_instructor.Instructor_id
+                        content['first_name'] = get_instructor.first_name
+                        content['last_name'] = get_instructor.last_name
+                        content['username'] = auth_user.username
+                        content['email'] = auth_user.email
+                        content['user_type'] = int(auth_user.user_type)
+                        # Updating last login
+                        content['last_login'] = auth_user.updated_at
+                        auth_user.updated_at = current_datetime
+                        # total login count
+                        auth_user.total_login_count = auth_user.total_login_count + 1
+                        auth_user.save()
+                        print(content)
+                        return JsonResponse(content, status=status.HTTP_200_OK)
+                    if int(auth_user.user_type)==2:
+                        get_student = Student.objects.get(student_id=auth_user.user_id)
+                        content['status'] = 1
+                        content['token'] = auth_user.auth_token
+                        content['user_id'] = get_student.student_id
+                        content['first_name'] = get_student.first_name
+                        content['last_name'] = get_student.last_name
+                        content['username'] = auth_user.username
+                        content['email'] = auth_user.email
+                        content['user_type'] = int(auth_user.user_type)
+                        # Updating last login
+                        content['last_login'] = auth_user.updated_at
+                        auth_user.updated_at = current_datetime
+                        # total login count
+                        auth_user.total_login_count = auth_user.total_login_count + 1
+                        auth_user.save()
+                        return JsonResponse(content, status=status.HTTP_200_OK)
             elif auth_user.count() > 1:
                 content['message'] = "Something wrong!"
                 return JsonResponse(content, status=status.HTTP_200_OK)
@@ -97,3 +129,11 @@ class LoginView(APIView):
         else:
             content['message'] = "Provide require fields"
             return JsonResponse(content, status=status.HTTP_400_BAD_REQUEST)
+        
+#create super user
+@api_view(['POST'])
+def create_superuser(request):
+    User.objects.create_superuser('admin', 'admin@example.com', '12345678')
+
+    return JsonResponse({'massege': 'ok'}, status=status.HTTP_200_OK)
+
