@@ -24,44 +24,16 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar />
+      <Navbar setIsAuthenticated={setIsAuthenticated} />
       <Routes>
         <Route path="/" element={isAuthenticated ? <Navigate to="/profile" /> : <Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/profile" element={isAuthenticated ? <Profile setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} />
+
       </Routes>
     </Router>
   );
 };
 
 export default App;
-
-
-
-
-// import React from "react";
-// import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-// import Signup from "./components/Signup";
-// import Login from "./components/Login";
-// import Profile from "./components/Profile";
-// import Navbar from "./components/Navbar";
-// import Home from "./components/Home"; // Ensure Home is inside components folder
-
-// const App = () => {
-//   const isAuthenticated = localStorage.getItem("token"); // Check if user is logged in
-
-//   return (
-//     <Router>
-//       <Navbar />
-//       <Routes>
-//         <Route path="/" element={isAuthenticated ? <Navigate to="/profile" /> : <Home />} />
-//         <Route path="/signup" element={<Signup />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
-//       </Routes>
-//     </Router>
-//   );
-// };
-
-// export default App;

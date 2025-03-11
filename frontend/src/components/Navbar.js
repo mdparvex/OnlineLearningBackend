@@ -1,33 +1,37 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/Profile.module.css"; // Ensure you create a Navbar.css for styles
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import "../styles/Profile.module.css";
 
-const Navbar = () => {
+const Navbar = ({ setIsAuthenticated }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const isAuthenticated = Boolean(localStorage.getItem("token"));
 
     const handleLogout = () => {
+        // Clear local storage
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
         localStorage.removeItem("user_type");
-        navigate("/"); // Redirect to home after logout
+
+        // Ensure the redirection happens to home
+        setIsAuthenticated(false);
+        navigate("/");
     };
 
     return (
         <nav className="navbar">
-            <div className="logo">
-                <Link to="/">📘 LearnHub</Link>
+            {/* Fix logo click issue */}
+            <div className="logo" onClick={() => navigate("/")}>
+                📘 LearnHub
             </div>
+            
             <div className="nav-links">
                 {isAuthenticated ? (
-                    <>
-                        {/* <Link to="/profile" className="nav-btn">Profile</Link> */}
-                        <button className="logout-btn" onClick={handleLogout}>Logout</button>
-                    </>
+                    <button className="logout-btn" onClick={handleLogout}>Logout</button>
                 ) : (
                     <>
-                        <Link to="/login" className="nav-btn">Login</Link>
-                        <Link to="/signup" className="nav-btn">Signup</Link>
+                        {location.pathname !== "/login" && <Link to="/login" className="nav-btn">Login</Link>}
+                        {location.pathname !== "/signup" && <Link to="/signup" className="nav-btn">Signup</Link>}
                     </>
                 )}
             </div>
