@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from ..models.Instructors import Instructor, InstructorSerializer,InstructorUpdateSerializer
 
 class InstructorView(APIView):
-    #authentication_classes = [SessionAuthentication, TokenAuthentication]
-    #permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request, instructor_id):
         content = {

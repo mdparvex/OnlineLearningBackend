@@ -4,10 +4,12 @@ import "../styles/Profile.module.css"; // Ensure you create a Navbar.css for sty
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const isAuthenticated = localStorage.getItem("token");
+    const isAuthenticated = Boolean(localStorage.getItem("token"));
 
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("user_type");
         navigate("/"); // Redirect to home after logout
     };
 
@@ -19,7 +21,7 @@ const Navbar = () => {
             <div className="nav-links">
                 {isAuthenticated ? (
                     <>
-                        <Link to="/profile" className="nav-btn">Profile</Link>
+                        {/* <Link to="/profile" className="nav-btn">Profile</Link> */}
                         <button className="logout-btn" onClick={handleLogout}>Logout</button>
                     </>
                 ) : (

@@ -95,17 +95,13 @@ const Profile = () => {
       <h2>
         Welcome, {user.first_name || "No First Name"} {user.last_name || "No Last Name"}
       </h2>
-      {user.photo ? (
-        <img src={user.photo} alt="Profile" width={100} height={100} />
-      ) : (
-        <p>No Profile Picture</p>
-      )}
+      {user.photo && <img src={new URL(user.photo, API_BASE_URL).href} alt="Profile" width={100} height={100} />}
 
       {isEditing ? (
         <form onSubmit={handleSubmit}>
           <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
           <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
-          <input type="file" name="photo" accept="lrarning/image/*" onChange={handleFileChange} />
+          <input type="file" name="photo" accept="learning/image/*" onChange={handleFileChange} />
           <button type="submit">Save</button>
           <button type="button" onClick={() => setIsEditing(false)}>
             Cancel
