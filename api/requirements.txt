@@ -7,6 +7,7 @@ charset-normalizer==3.4.1
 click==8.1.8
 colorama==0.4.6
 Django==5.1.5
+django-cors-headers==4.7.0
 django-redis==5.4.0
 djangorestframework==3.15.2
 dnspython==2.7.0
@@ -22,6 +23,7 @@ MarkupSafe==3.0.2
 mongoengine==0.29.1
 packaging==24.2
 passlib==1.7.4
+#psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pycryptodome==3.21.0
 pymongo==4.10.1
