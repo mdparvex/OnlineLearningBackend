@@ -38,7 +38,7 @@ Thumbs.db
 /test/
 *.spec.js
 # Ignore all .env files
-*.env.local
+#*.env.local
 
 # But include .env.production
-!.env.prod
+#!.env.prod

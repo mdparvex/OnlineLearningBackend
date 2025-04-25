@@ -1,5 +1,6 @@
 # Environment variables
-.env
+.env.local
+.env.prod
 
 # IDE files
 .vscode/
@@ -18,6 +19,8 @@
 *.jar
 
 **/__pycache__/
+*/__pycache__/*
 __pycache__/
 /static/
 learning/
+kube/
