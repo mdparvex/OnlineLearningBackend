@@ -1,6 +1,5 @@
 # Environment variables
-.env.local
-.env.prod
+.env
 
 # IDE files
 .vscode/
@@ -24,3 +23,5 @@ __pycache__/
 /static/
 learning/
 kube/
+api/assets/
+api/media/

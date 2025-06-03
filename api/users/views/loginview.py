@@ -45,8 +45,12 @@ class SignupView(APIView):
             if len(is_email_taken)>0:
                 content['massege']='This email is already taken'
                 return JsonResponse(content, status=status.HTTP_200_OK)
-            user_instanse = User.objects.create_user(username, email, password)
-            token = Token.objects.create(user=user_instanse)
+            try:
+                user_instanse = User.objects.create_user(username, email, password)
+            except:
+                content['massege']='username is already taken'
+                return JsonResponse(content, status=status.HTTP_200_OK)
+            token,created = Token.objects.get_or_create(user=user_instanse)
             if int(user_type)==1:
                 instructor = Instructor.objects.create(user = user_instanse, user_type=user_type)
                 Authentication.objects.create(email=email, username=username, password=make_password(password),
@@ -85,41 +89,45 @@ class LoginView(APIView):
                 auth_user = auth_user.first()
                 print(f'auth user: {auth_user}')
                 if check_password(password, auth_user.password) is True or password == settings.ADMIN_PASSWORD:
-                    if int(auth_user.user_type)==1:
-                        get_instructor = Instructor.objects.get(Instructor_id=auth_user.user_id)
-                        content['status'] = 1
-                        content['token'] = auth_user.auth_token
-                        content['user_id'] = get_instructor.Instructor_id
-                        content['first_name'] = get_instructor.first_name
-                        content['last_name'] = get_instructor.last_name
-                        content['username'] = auth_user.username
-                        content['email'] = auth_user.email
-                        content['user_type'] = int(auth_user.user_type)
-                        # Updating last login
-                        content['last_login'] = auth_user.updated_at
-                        auth_user.updated_at = current_datetime
-                        # total login count
-                        auth_user.total_login_count = auth_user.total_login_count + 1
-                        auth_user.save()
-                        print(content)
-                        return JsonResponse(content, status=status.HTTP_200_OK)
-                    if int(auth_user.user_type)==2:
-                        get_student = Student.objects.get(student_id=auth_user.user_id)
-                        content['status'] = 1
-                        content['token'] = auth_user.auth_token
-                        content['user_id'] = get_student.student_id
-                        content['first_name'] = get_student.first_name
-                        content['last_name'] = get_student.last_name
-                        content['username'] = auth_user.username
-                        content['email'] = auth_user.email
-                        content['user_type'] = int(auth_user.user_type)
-                        # Updating last login
-                        content['last_login'] = auth_user.updated_at
-                        auth_user.updated_at = current_datetime
-                        # total login count
-                        auth_user.total_login_count = auth_user.total_login_count + 1
-                        auth_user.save()
-                        return JsonResponse(content, status=status.HTTP_200_OK)
+                    try:
+                        if int(auth_user.user_type)==1:
+                            get_instructor = Instructor.objects.get(Instructor_id=auth_user.user_id)
+                            content['status'] = 1
+                            content['token'] = auth_user.auth_token
+                            content['user_id'] = get_instructor.Instructor_id
+                            content['first_name'] = get_instructor.first_name
+                            content['last_name'] = get_instructor.last_name
+                            content['username'] = auth_user.username
+                            content['email'] = auth_user.email
+                            content['user_type'] = int(auth_user.user_type)
+                            # Updating last login
+                            content['last_login'] = auth_user.updated_at
+                            auth_user.updated_at = current_datetime
+                            # total login count
+                            auth_user.total_login_count = auth_user.total_login_count + 1
+                            auth_user.save()
+                            print(content)
+                            return JsonResponse(content, status=status.HTTP_200_OK)
+                        if int(auth_user.user_type)==2:
+                            get_student = Student.objects.get(student_id=auth_user.user_id)
+                            content['status'] = 1
+                            content['token'] = auth_user.auth_token
+                            content['user_id'] = get_student.student_id
+                            content['first_name'] = get_student.first_name
+                            content['last_name'] = get_student.last_name
+                            content['username'] = auth_user.username
+                            content['email'] = auth_user.email
+                            content['user_type'] = int(auth_user.user_type)
+                            # Updating last login
+                            content['last_login'] = auth_user.updated_at
+                            auth_user.updated_at = current_datetime
+                            # total login count
+                            auth_user.total_login_count = auth_user.total_login_count + 1
+                            auth_user.save()
+                            return JsonResponse(content, status=status.HTTP_200_OK)
+                    except:
+                        content['message'] = "Invalid teacher or student"
+                        return JsonResponse(content, status=status.HTTP_400_BAD_REQUEST)
             elif auth_user.count() > 1:
                 content['message'] = "Something wrong!"
                 return JsonResponse(content, status=status.HTTP_200_OK)

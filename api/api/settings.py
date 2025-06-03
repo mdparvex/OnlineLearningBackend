@@ -91,19 +91,44 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+DOCKER_READY = str(os.getenv("DOCKER"))=="1"
+if DOCKER_READY:
+    DATABASE_ENGINE = os.getenv("DATABASE_ENGINE")
+    DATABASE_NAME = os.getenv("DATABASE_NAME")
+    DATABASE_USER = os.getenv("DATABASE_USERNAME")
+    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+    DATABASE_HOST = os.getenv("DATABASE_HOST")
+    DATABASE_PORT = os.getenv("DATABASE_PORT")
+else:
+    DATABASE_ENGINE = os.getenv("LOCAL_DATABASE_ENGINE")
+    DATABASE_NAME = os.getenv("LOCAL_DATABASE_NAME")
+    DATABASE_USER = os.getenv("LOCAL_DATABASE_USERNAME")
+    DATABASE_PASSWORD = os.getenv("LOCAL_DATABASE_PASSWORD")
+    DATABASE_HOST = os.getenv("LOCAL_DATABASE_HOST")
+    DATABASE_PORT = os.getenv("LOCAL_DATABASE_PORT")
 
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.{}'.format(
-             os.getenv('DATABASE_ENGINE', 'sqlite3')
-         ),
-         'NAME': os.getenv('DATABASE_NAME', 'learning_platform'),
-         'USER': os.getenv('DATABASE_USERNAME', 'myprojectuser'),
-         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'password'),
-         'HOST': os.getenv('DATABASE_HOST', '127.0.0.1'),
-         'PORT': os.getenv('DATABASE_PORT', 5432),
-     }
-}
+DB_IS_AVAIL = all([
+    DATABASE_ENGINE,
+    DATABASE_NAME,
+    DATABASE_USER,
+    DATABASE_PASSWORD,
+    DATABASE_HOST,
+    DATABASE_PORT
+])
+
+if DB_IS_AVAIL:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.{}'.format(
+                DATABASE_ENGINE
+            ),
+            'NAME': DATABASE_NAME,
+            'USER': DATABASE_USER,
+            'PASSWORD': DATABASE_PASSWORD,
+            'HOST': DATABASE_HOST,
+            'PORT': DATABASE_PORT,
+        }
+    }
 
 
 CACHES = {

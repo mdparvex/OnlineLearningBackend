@@ -82,6 +82,7 @@ const Profile = () => {
       });
       setUser(response.data.user_data);
       setIsEditing(false);
+      navigate(0);
     } catch (error) {
       console.error("Error updating profile", error);
     }

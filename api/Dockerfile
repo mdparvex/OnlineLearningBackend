@@ -22,13 +22,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Fix Windows line endings; remove this when deploy in linus system
-RUN dos2unix /app/entrypoint.sh
+#RUN dos2unix /app/entrypoint.sh
 
-# Make entrypoint executable
-RUN chmod +x /app/entrypoint.sh
+COPY app/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose port
 EXPOSE 8000
 
 # Run the entrypoint script
-CMD ["/app/entrypoint.sh"]
+CMD ["entrypoint.sh"]
